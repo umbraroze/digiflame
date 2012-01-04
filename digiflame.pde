@@ -38,8 +38,8 @@ class Spark {
     fudge.y = -fudge.y;
     v.add(fudge);
   }
-  public boolean isAlive() {
-    return (life > 0);
+  public boolean isDead() {
+    return (life <= 0);
   }
 }
 
@@ -47,20 +47,47 @@ int numberOfSparks = 200;
 Spark[] sparks;
 
 void draw() {
-  background(0);
+  // Update spark locations.
   for(int i = 0; i < numberOfSparks; i++) {
     sparks[i].update();
-    if(sparks[i].isAlive()) {
-      int x = (int)(sparks[i].loc.x);
-      int y = (int)(sparks[i].loc.y);
-      stroke(255,0,0);
-      fill(255,0,0);
-      arc(x,y,20,20,0,TWO_PI);
-      point(x,y);
-    } else {
+    if(sparks[i].isDead()) {
       sparks[i] = new Spark();
     }
   }
+
+  background(0);
+  int gridRows = height/20;
+  int gridColumns = width/20;
+  int gutter = 3;
+  int sqW = (width/gridColumns)-(gutter*2);
+  int sqH = (height/gridRows)-(gutter*2);
+  for(int gridY = 0; gridY < gridRows; gridY++) {
+    for(int gridX = 0; gridX < gridColumns; gridX++) {
+      // Random colour.
+      fill((int)random(255),(int)random(255),int(random(255)));
+      
+      // Square coordinates.
+      int ax = (width/gridColumns*gridX)+gutter;
+      int ay = (height/gridRows*gridY)+gutter;
+      int bx = ax + sqW;
+      int by = ay + sqH;
+      
+      // Check all sparks.
+      boolean lit = true;
+      for(int s = 0; s < numberOfSparks; s++) {
+        if(sparks[s].loc.x >= ax &&
+          sparks[s].loc.x <= bx &&
+          sparks[s].loc.y >= ay &&
+          sparks[s].loc.y <= by) {
+          lit = false;
+          continue;
+        }
+      }
+      if(lit)
+        rect(ax,ay,sqW,sqH);
+    }
+  }
+  return;
 }
 
 void setup() {
