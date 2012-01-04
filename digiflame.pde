@@ -1,3 +1,17 @@
+/*
+ * A random digital flame animation thing. Inspired by
+ * some speakers. (http://www.youtube.com/watch?v=8asnz3E4n4o)
+ * I can't believe I watched a random Ashens video at
+ * 6 AM, couldn't bloody sleep, so I thought "dammit, I'm
+ * going to bash out some Processing code".
+ * Well, here is it anyway!
+ *
+ * v.1 - 2012-01-04
+ *
+ * (c) Urpo Lankinen 2012. Dual-licensed under GNU
+ * General Public License 3 and Creative Commons
+ * Attribution-Share Alike 3.0 Unported.
+ */
 
 class Spark {
   /// Location of the spark (stored in x and y fields)
@@ -17,8 +31,6 @@ class Spark {
     v.x -= v.x/2.0;
     v.y = -random(tinyUnit*1.2);
     life = (int)random((float)height/20.0);
-    //print("New spark: loc=("+loc.x+","+loc.y+"), "+
-    //  "v=("+v.x+","+v.y+"), life="+life+"\n"); 
   }
   /// Update a particle's location.
   public void update() {
@@ -43,6 +55,8 @@ class Spark {
   }
 }
 
+int colourMode = 0;
+int maxColourModes = 2;
 int numberOfSparks = 200;
 Spark[] sparks;
 
@@ -63,16 +77,49 @@ void draw() {
   int sqH = (height/gridRows)-(gutter*2);
   for(int gridY = 0; gridY < gridRows; gridY++) {
     for(int gridX = 0; gridX < gridColumns; gridX++) {
-      // Random colour.
-      fill((int)random(255),(int)random(255),int(random(255)));
-      
-      // Square coordinates.
+      // Pick a colour mode.
+      switch(colourMode) {
+        case 0:
+        default:
+          // Gradient
+          color a = color(20,0,0);
+          color b = color(200,10,10);
+          fill(lerpColor(a,b,
+            (float)gridY / (float)gridRows));
+          break;
+        case 1:
+          // Rainbow
+          colorMode(HSB,100);
+          //color rainA = color(0,100,100);
+          //color rainB = color(100,100,100);
+          color graysA = color(0,0,0);
+          color graysB = color(0,0,60);
+          // Ugly hack version
+          color rain = color(
+            (int)(((float)gridX / (float)gridColumns) * 100.0),
+            100,100);
+          // Derp derp, this lerp won't work.
+          /*color rain = lerpColor(rainA,rainB,
+            (float)gridX / (float)gridColumns);*/
+          color grays = lerpColor(graysA,graysB,
+            (float)gridY / (float)gridRows);
+          fill(blendColor(rain,grays,SUBTRACT));
+          colorMode(RGB);
+          break;
+        case 2:
+          // Random colour
+          fill((int)random(255),
+            (int)random(255),
+            int(random(255)));
+          break;
+      }
+      // Square's coordinates.
       int ax = (width/gridColumns*gridX)+gutter;
       int ay = (height/gridRows*gridY)+gutter;
       int bx = ax + sqW;
       int by = ay + sqH;
       
-      // Check all sparks.
+      // Check all sparks if they happen to be in this square.
       boolean lit = true;
       for(int s = 0; s < numberOfSparks; s++) {
         if(sparks[s].loc.x >= ax &&
@@ -83,11 +130,19 @@ void draw() {
           continue;
         }
       }
+      // Finally, if so inclined, draw a rectangle.
       if(lit)
         rect(ax,ay,sqW,sqH);
     }
   }
   return;
+}
+
+// Mouse clicks just change the colour mode.
+void mouseClicked() {
+  colourMode++;
+  if(colourMode > maxColourModes)
+    colourMode = 0;
 }
 
 void setup() {
