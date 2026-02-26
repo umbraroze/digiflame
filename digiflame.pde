@@ -1,16 +1,14 @@
 /*
- * A random digital flame animation thing. Inspired by
- * some speakers. (http://www.youtube.com/watch?v=8asnz3E4n4o)
- * I can't believe I watched a random Ashens video at
- * 6 AM, couldn't bloody sleep, so I thought "dammit, I'm
- * going to bash out some Processing code".
- * Well, here is it anyway!
+ * A random digital flame animation thing.
  *
  * v.1 - 2012-01-04
  *
- * (c) Urpo Lankinen 2012. Dual-licensed under GNU
- * General Public License 3 and Creative Commons
- * Attribution-Share Alike 3.0 Unported.
+ * Git repository: https://github.com/umbraroze/digiflame
+ *
+ * (c) Rose Midford 2012. Distributed
+ * under MIT license.
+ * 
+ * SPDX-License-Identifier: MIT
  */
 
 class Spark {
